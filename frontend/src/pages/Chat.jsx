@@ -26,6 +26,9 @@ function Chat() {
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
+      socket.current.on('connect_error', (err) => {
+        console.log(`Connection error frontend: ${err.message}`);
+      });
       socket.current.emit("add-user", currentUser._id);
     }
     //cloase the connection
