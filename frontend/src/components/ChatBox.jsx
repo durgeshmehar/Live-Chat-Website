@@ -56,7 +56,9 @@ export default function ChatBox({
   useEffect(() => {
     if (socket.current) {
       socket.current.on("receive-message", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+        if(msg.from === currentChat._id){
+          setArrivalMessage({ fromSelf: false, message: msg.message });
+        }
       });
     }
   }, [socket.current]);

@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
     const sendSocketIds = onlineUsers.get(data.to);
     if (sendSocketIds) {
       sendSocketIds.forEach((socketId) => {
-        socket.to(socketId).emit("receive-message", data.message);
+        socket.to(socketId).emit("receive-message", data);
       });
     }
   });
