@@ -14,9 +14,9 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
 
-app.use(express.static(path.join(__dirname,"../frontend/dist")));
+app.use(express.static(path.join(__dirname,"dist")));
 app.use("*", (req, res) => {
-  res.sendFile(path.join(__dirname,"..","frontend", "dist", "index.html"));
+  res.sendFile(path.join(__dirname,"dist", "index.html"));
 });
 
 moongose
@@ -56,7 +56,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason, details) => {
-    // the reason of the disconnection, for example "transport error"
     console.log(reason);
     console.log(details);
   });
