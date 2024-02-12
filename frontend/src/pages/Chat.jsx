@@ -1,10 +1,10 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Contact from "../components/Contact";
 import styled from "styled-components";
 import Welcome from "../components/Welcome";
 import ChatBox from "../components/ChatBox";
-import { host } from "../utils/APIRoutes"
+import { host } from "../utils/APIRoutes";
 import { io } from "socket.io-client";
 
 function Chat() {
@@ -18,17 +18,23 @@ function Chat() {
     console.log("currentChat :", currentChat);
   };
   const isBackClick = (value) => {
-    if(value){
+    if (value) {
       setCurrentChat(undefined);
     }
-  }
+  };
 
-  useEffect(()=>{
-    if(currentUser){
+  useEffect(() => {
+    if (currentUser) {
       socket.current = io(host);
-      socket.current.emit("add-user",currentUser._id);
+      socket.current.emit("add-user", currentUser._id);
     }
-  },[currentUser])
+    //cloase the connection
+    return () => {
+      if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+        socket.current.close();
+      }
+    };
+  }, [currentUser]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("chat-app-user"));
@@ -42,17 +48,26 @@ function Chat() {
   return (
     <>
       <Container>
-      {console.log("connected host :", host)}
+        {console.log("connected host :", host)}
         <div className="container">
-          <div className={`contact_chat ${currentChat ? "makeNone":"makeBlock"}`}>
+          <div
+            className={`contact_chat ${currentChat ? "makeNone" : "makeBlock"}`}
+          >
             <Contact changeChat={handleChangeChat} currentUser={currentUser} />
           </div>
 
-          <div className={`messageBox ${currentChat ? "makeBlock":"makeNone"}`}>
+          <div
+            className={`messageBox ${currentChat ? "makeBlock" : "makeNone"}`}
+          >
             {currentChat === undefined ? (
               <Welcome />
             ) : (
-              <ChatBox currentChat={currentChat} currentUser={currentUser} isBackClick={isBackClick} socket = {socket}/>
+              <ChatBox
+                currentChat={currentChat}
+                currentUser={currentUser}
+                isBackClick={isBackClick}
+                socket={socket}
+              />
             )}
           </div>
         </div>
