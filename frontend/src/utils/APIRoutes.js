@@ -7,8 +7,8 @@
 // export const messageAddRoute = `${host}/message/add`
 // export const messageGetRoute = `${host}/message/getAll`
 
+export const host= "http://durgeshchat.vercel.app/";
 // export const host="http://localhost:5000/"
-export const host= "https://durgeshchat.vercel.app/";
 export const registerRoute = `/user/register`
 export const loginRoute = `/user/login`
 export const setAvatarRoute = `/user/setavatar`
