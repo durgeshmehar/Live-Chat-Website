@@ -14,10 +14,15 @@ app.use(express.json());
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
 
-app.use(express.static(path.join(__dirname,"dist")));
+app.use(express.static(path.join(__dirname,"..","frontend","dist")));
 app.use("*", (req, res) => {
-  res.sendFile(path.join(__dirname,"dist", "index.html"));
+  console.log("path :",path.join(__dirname,"..","frontend","dist", "index.html"))
+  res.sendFile(path.join(__dirname,"..","frontend","dist", "index.html"));
 });
+// app.use(express.static(path.join(__dirname,"dist")));
+// app.use("*", (req, res) => {
+//   res.sendFile(path.join(__dirname,"dist", "index.html"));
+// });
 
 moongose
   .connect(process.env.MONGODB_URL)
