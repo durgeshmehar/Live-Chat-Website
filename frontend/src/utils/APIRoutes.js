@@ -1,5 +1,5 @@
 
-export const host= "http://durgeshchat.vercel.app/";
+export const host= "https://chat-app-2893.onrender.com/";
 // export const host="http://localhost:5000/"
 export const registerRoute = `/user/register`
 export const loginRoute = `/user/login`

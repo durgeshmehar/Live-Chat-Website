@@ -17,7 +17,7 @@ app.use("/message", messageRouter);
 app.use(express.static(path.join(__dirname,"..","frontend","dist")));
 app.use("*", (req, res) => {
   console.log("path :",path.join(__dirname,"..","frontend","dist", "index.html"))
-  
+
   res.sendFile(path.join(__dirname,"..","frontend","dist", "index.html"));
 });
 // app.use(express.static(path.join(__dirname,"dist")));
@@ -39,7 +39,8 @@ const server = app.listen(process.env.PORT, () => {
 });
 const io = socket(server, {
   cors: {
-    origin:"http://durgeshchat.vercel.app/",
+    // origin:"http://durgeshchat.vercel.app/",
+    origin:"https://chat-app-2893.onrender.com/",
     methods: ["GET", "POST"],
     credentials: true,
     transports: ["websocket"],
