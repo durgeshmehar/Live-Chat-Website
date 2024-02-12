@@ -12,6 +12,31 @@ function Chat() {
   const navigate = useNavigate();
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
+  const [msgNotification, setMsgNotification] = useState([]);
+
+  const handleNotification = (userID) => {
+    setMsgNotification((prev) => {
+      const updatedNotification = prev.map((userObj) => {
+        if (userObj._id === userID) {
+          return { ...userObj, count: userObj.count + 1 };
+        }
+        return userObj;
+      });
+
+      if (!updatedNotification.some((userObj) => userObj._id === userID)) {
+        updatedNotification.push({ _id: userID, count: 1 });
+      }
+
+      return updatedNotification;
+    });
+  };
+
+  const removeNotification = (userID) => {
+    console.log("removeNotification userID :", userID);
+    let curr = msgNotification.filter((userObj) => userObj._id != userID);
+    console.log("removeNotification curr :", curr);
+    setMsgNotification(curr);
+  };
 
   const handleChangeChat = (chat) => {
     setCurrentChat(chat);
@@ -26,7 +51,7 @@ function Chat() {
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
-      socket.current.on('connect_error', (err) => {
+      socket.current.on("connect_error", (err) => {
         console.log(`Connection error frontend: ${err.message}`);
       });
       socket.current.emit("add-user", currentUser._id);
@@ -56,7 +81,11 @@ function Chat() {
           <div
             className={`contact_chat ${currentChat ? "makeNone" : "makeBlock"}`}
           >
-            <Contact changeChat={handleChangeChat} currentUser={currentUser} />
+            <Contact
+              changeChat={handleChangeChat}
+              currentUser={currentUser}
+              msgNotification={msgNotification}
+            />
           </div>
 
           <div
@@ -70,6 +99,8 @@ function Chat() {
                 currentUser={currentUser}
                 isBackClick={isBackClick}
                 socket={socket}
+                handleNotification={handleNotification}
+                removeNotification={removeNotification}
               />
             )}
           </div>

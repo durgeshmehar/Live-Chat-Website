@@ -10,6 +10,8 @@ export default function ChatBox({
   currentUser,
   isBackClick,
   socket,
+  handleNotification,
+  removeNotification,
 }) {
   const [messages, setMessages] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
@@ -25,9 +27,13 @@ export default function ChatBox({
       to: currentChat._id,
       from: currentUser._id,
       message: msg,
+      time: new Date(),
     });
 
-    const msgSelf = [...messages, { message: msg, fromSelf: true }];
+    const msgSelf = [
+      ...messages,
+      { message: msg, fromSelf: true, time: new Date() },
+    ];
     setMessages(msgSelf);
 
     if (data.status) {
@@ -50,18 +56,26 @@ export default function ChatBox({
     }
     if (currentChat && currentUser) {
       fetchMsg();
+      removeNotification(currentChat._id);
     }
   }, [currentChat]);
 
   useEffect(() => {
     if (socket.current) {
       socket.current.on("receive-message", (msg) => {
-        if(msg.from == currentChat._id){
-          setArrivalMessage({ fromSelf: false, message: msg.message });
+        if (msg.from == currentChat._id) {
+          setArrivalMessage({
+            fromSelf: false,
+            message: msg.message,
+            time: msg.time,
+          });
+        } else {
+          console.log("msg.from :", msg.from);
+          handleNotification(msg.from);
         }
       });
     }
-  }, [socket.current]);
+  }, [socket,socket.current]);
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -73,6 +87,16 @@ export default function ChatBox({
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  function getTime(givenDate) {
+    let date = new Date(givenDate);
+    let options = {
+      hour: "numeric",
+      minute: "numeric",
+    };
+    let localTime = date.toLocaleTimeString("en-US", options);
+    return localTime.toUpperCase();
+  }
 
   return (
     <Container>
@@ -99,6 +123,9 @@ export default function ChatBox({
               >
                 <div className="content">
                   <p>{msg.message}</p>
+                </div>
+                <div className="time">
+                  <p>{getTime(msg.time)}</p>
                 </div>
               </div>
             );
@@ -142,7 +169,6 @@ const Container = styled.div`
         text-transform: uppercase;
       }
     }
-    
   }
 
   .chat-message {
@@ -150,13 +176,13 @@ const Container = styled.div`
     height: 68vh;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
     padding: 1rem 2rem;
     overflow: auto;
 
     &::-webkit-scrollbar {
       width: 0.2rem;
-      &-thumb{
+      &-thumb {
         background-color: #ffffff39;
         border-radius: 1rem;
         width: 0.1rem;
@@ -165,12 +191,20 @@ const Container = styled.div`
 
     .message {
       max-width: 60%;
+
       .content {
         padding: 0.8rem 0.9rem;
         border-radius: 1rem;
         overflow-wrap: break-word;
         font-size: 1.1rem;
         color: white;
+      }
+      .time {
+        text-align: right;
+        color: white;
+        opacity: 0.5;
+        margin-top: 0.2rem;
+        font-size: 0.9rem;
       }
     }
     .sended {
@@ -209,6 +243,9 @@ const Container = styled.div`
       display: none;
     }
     .chat-header {
+      position: sticky;
+      top: 0;
+      left: 0;
       .brand {
         .back {
           display: block;

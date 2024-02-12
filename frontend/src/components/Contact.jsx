@@ -7,7 +7,7 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { getContactsRoute } from "../utils/APIRoutes";
 
-export default function Contact({ changeChat, currentUser }) {
+export default function Contact({ changeChat, currentUser, msgNotification }) {
   const [contacts, setContacts] = useState(undefined);
   const [selectedUser, setSelectedUser] = useState(undefined);
   const navigate = useNavigate();
@@ -65,6 +65,17 @@ export default function Contact({ changeChat, currentUser }) {
                     src={`data:image/svg+xml;base64,${contact.avatarImage}`}
                   />
                   <h3>{contact.username}</h3>
+                  {console.log("msgNotification updation:", msgNotification)}
+                  {msgNotification &&
+                    msgNotification.map((userObj) => {
+                      if (userObj._id == contact._id && userObj.count > 0) {
+                        return (
+                          <span className="notification">
+                            <p>{userObj.count}</p>
+                          </span>
+                        );
+                      }
+                    })}
                 </div>
               );
             })}
@@ -97,7 +108,7 @@ const Container = styled.div`
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding:0 1.2rem;
+    padding: 0 1.2rem;
 
     .icon {
       cursor: pointer;
@@ -144,6 +155,7 @@ const Container = styled.div`
 
     .userdiv {
       gap: 1rem;
+      position: relative;
       display: flex;
       width: 92%;
       cursor: pointer;
@@ -160,6 +172,20 @@ const Container = styled.div`
       }
       h3 {
         color: white;
+      }
+      .notification {
+        position: absolute;
+        right: 1rem;
+        margin-left: 0.2rem;
+        height: 2rem;
+        width: 2rem;
+        background-color: green;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        font-size: 1rem;
       }
     }
 

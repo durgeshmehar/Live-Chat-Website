@@ -79,7 +79,7 @@ module.exports.setavatar = async (req, res, next) => {
 module.exports.getAllContacts = async (req, res, next) => {
   try{
     const id = req.params.id;
-    const users = await User.find({_id : {$ne: id} });
+    const users = await User.find({_id : {$ne: id} }).sort({username: 1});
     res.send({ msg: "All contacts fetched successfully", users});
   }
   catch(err){
