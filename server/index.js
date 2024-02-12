@@ -37,7 +37,7 @@ const io = socket(server, {
     // origin: "http://localhost:5000/",
     methods: ["GET", "POST"],
     credentials: true,
-    transports: ["websocket", "polling"],
+    transports: ["websocket"],
   },
   allowEIO3: true,
 });
