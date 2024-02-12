@@ -42,6 +42,7 @@ function Chat() {
   return (
     <>
       <Container>
+      {console.log("connected host :", host)}
         <div className="container">
           <div className={`contact_chat ${currentChat ? "makeNone":"makeBlock"}`}>
             <Contact changeChat={handleChangeChat} currentUser={currentUser} />

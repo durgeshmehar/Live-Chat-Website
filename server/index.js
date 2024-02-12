@@ -5,12 +5,20 @@ const moongose = require("mongoose");
 const userRouter = require("./routes/userRoutes");
 const messageRouter = require("./routes/messageRoutes");
 const socket = require("socket.io");
+const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "dist")));
+
+
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
+
+app.use('*',(req,res)=>{
+  res.sendFile(path.join(__dirname,'dist','index.html'))
+})
 
 moongose
   .connect(process.env.MONGODB_URL)
@@ -26,7 +34,7 @@ const server = app.listen(process.env.PORT, () => {
 });
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "*",
     credentials: true,
   },
 });
