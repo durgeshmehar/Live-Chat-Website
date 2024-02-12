@@ -17,6 +17,7 @@ app.use("/message", messageRouter);
 app.use(express.static(path.join(__dirname,"..","frontend","dist")));
 app.use("*", (req, res) => {
   console.log("path :",path.join(__dirname,"..","frontend","dist", "index.html"))
+  
   res.sendFile(path.join(__dirname,"..","frontend","dist", "index.html"));
 });
 // app.use(express.static(path.join(__dirname,"dist")));
