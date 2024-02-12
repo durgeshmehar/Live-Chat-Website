@@ -75,7 +75,7 @@ export default function ChatBox({
         }
       });
     }
-  }, [socket,socket.current]);
+  }, [socket]);
 
   useEffect(() => {
     if (arrivalMessage) {

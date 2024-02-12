@@ -73,6 +73,16 @@ function Chat() {
     }
   }, []);
 
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("receive-message", (msg) => {
+        if (!currentChat || currentChat._id !== msg.from) {
+          handleNotification(msg.from);
+        }
+      });
+    }
+  }, [currentChat, handleNotification, socket]);
+
   return (
     <>
       <Container>
