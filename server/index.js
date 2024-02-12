@@ -12,13 +12,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "dist")));
 
-
 app.use("/user", userRouter);
 app.use("/message", messageRouter);
 
-app.use('*',(req,res)=>{
-  res.sendFile(path.join(__dirname,'dist','index.html'))
-})
+app.use("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 moongose
   .connect(process.env.MONGODB_URL)
@@ -35,8 +34,11 @@ const server = app.listen(process.env.PORT, () => {
 const io = socket(server, {
   cors: {
     origin: "https://durgeshchat.vercel.app/",
+    methods: ["GET", "POST"],
     credentials: true,
+    transports: ["websocket", "polling"],
   },
+  allowEIO3: true,
 });
 
 global.onlineUsers = new Map();
