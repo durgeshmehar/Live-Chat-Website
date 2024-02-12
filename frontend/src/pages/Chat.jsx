@@ -79,7 +79,7 @@ function Chat() {
   );
 }
 const Container = styled.div`
-  height: 100vh;
+  height: 100svh;
   width: 100vw;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -105,7 +105,7 @@ const Container = styled.div`
   @media screen and (min-width: 0px) and (max-width: 768px) {
     .container {
       grid-template-columns: 40% 60%;
-      height: 100vh;
+      height: 100svh;
       width: 100vw;
     }
   }

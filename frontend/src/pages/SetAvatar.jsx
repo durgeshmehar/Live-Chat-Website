@@ -116,7 +116,7 @@ function SetAvatar() {
   );
 }
 const Container = styled.div`
-  height: 100vh;
+  height: 100svh;
   width: 100vw;
   background-color: #09091d;
   display: flex;
