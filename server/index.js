@@ -39,7 +39,7 @@ const server = app.listen(process.env.PORT, () => {
 });
 const io = socket(server, {
   cors: {
-    // origin:"http://localhost:5000/",
+    // origin:"http://durgeshchat.vercel.app/",
     origin:"https://chat-app-2893.onrender.com/",
     methods: ["GET", "POST"],
     credentials: true,
@@ -52,27 +52,29 @@ global.onlineUsers = new Map();
 io.on("connection", (socket) => {
 
   socket.on("add-user", (userId) => {
-    if (!onlineUsers.has(userId)) {
-      onlineUsers.set(userId, new Set());
+    if(!onlineUsers.has(userId)){
+      onlineUsers.set(userId, socket.id);
     }
-    onlineUsers.get(userId).add(socket.id);
+    onlineUsers.get(userId).push(socket.id);
   });
 
   socket.on("send-message", (data) => {
-    const userSockets = onlineUsers.get(data.to);
-    if (userSockets) {
-      userSockets.forEach((socketId) => {
+    const sendSocketIds = onlineUsers.get(data.to);
+    if (sendSocketIds) {
+      sendSocketIds.forEach((socketId) => {
         socket.to(socketId).emit("receive-message", data.message);
       });
     }
   });
 
   socket.on("disconnect", () => {
-    onlineUsers.forEach((userId, sockets) => {
-      sockets.delete(socket.id);
-      if (sockets.size === 0) {
+    onlineUsers.forEach((socketIds, userId) => {
+      const newSocketIds = socketIds.filter((socketId) => socketId !== socket.id);
+      if (newSocketIds.length === 0) {
         onlineUsers.delete(userId);
+      } else {
+        onlineUsers.set(userId, newSocketIds);
       }
-    })
+    });
   });
 });
