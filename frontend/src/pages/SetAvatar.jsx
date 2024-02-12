@@ -64,7 +64,7 @@ function SetAvatar() {
     const data = [];
 
     async function fetchData() {
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < 4; i++) {
         const imgData = await axios.get(
           `${api}/${Math.round(Math.random() * 10000)}?apikey=ktzu0qLSCOmb7A`
         );
