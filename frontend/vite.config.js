@@ -14,7 +14,7 @@ export default defineConfig({
         target:'http://localhost:5000',
         changeOrigin:true
       },
-      '/user/setavatart':{
+      '/user/setavatar':{
         target:'http://localhost:5000',
         changeOrigin:true
       },

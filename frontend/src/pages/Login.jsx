@@ -13,6 +13,8 @@ function Login() {
     password: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const toastOptions = {
     position: "bottom-right",
     autoClose: 3000,
@@ -48,27 +50,35 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if (handleValidation()) {
       const { username, password } = values;
       console.log("submited :", values);
-      const { data } = await axios.post(loginRoute, {
-        username: username,
-        password: password,
-      });
+      try {
+        const { data } = await axios.post(loginRoute, {
+          username: username,
+          password: password,
+        });
 
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-        console.log("data in login false:", data);
-      } else {
-        console.log("data :", data);
-        await localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        } else {
+          await localStorage.setItem(
+            "chat-app-user",
+            JSON.stringify(data.user)
+          );
+          const user = await JSON.parse(localStorage.getItem("chat-app-user"));
 
-        if (user && user.isAvatarImageSet === false) {
-          navigate("/setavatar");
-        } else if (user && user.email) {
-          navigate("/");
+          if (user && user.isAvatarImageSet === false) {
+            navigate("/setavatar");
+          } else if (user && user.email) {
+            navigate("/");
+          }
         }
+        setIsLoading(false);
+      } catch (err) {
+        toast.error("Internal Server Error ,Try again", toastOptions);
+        setIsLoading(false);
       }
     }
   };
@@ -131,7 +141,6 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
   }
 
   .brand {
@@ -206,17 +215,18 @@ const Container = styled.div`
       img {
         height: 2rem !important;
       }
-      h1{
+      h1 {
         font-size: 1.5rem;
       }
     }
-    input,button{
-      width:70vw !important; 
-      padding:0.5rem;
+    input,
+    button {
+      width: 70vw !important;
+      padding: 0.5rem;
       margin-block: 0.8rem;
       font-size: 0.9rem;
     }
-    span{
+    span {
       font-size: 0.8rem;
     }
   }

@@ -123,7 +123,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
 
   .loader {
     height: 20rem;
@@ -132,6 +132,13 @@ const Container = styled.div`
 
   .title-container {
     color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    h1{
+      text-align: center;
+    }
   }
 
   .avatar-container {
@@ -139,6 +146,8 @@ const Container = styled.div`
     flex-direction: row;
     justify-content: center;
     gap: 2rem;
+    flex-wrap: wrap;
+    
 
     .avatar {
       display: flex;
@@ -174,6 +183,23 @@ const Container = styled.div`
 
     &:hover {
       background-color: #997af0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .title-container {
+      h1{
+        width: 80%;
+      }
+    }
+    .avatar-container {
+      gap: 1rem;
+      .avatar{
+          padding: 0rem;
+      }
+    }
+    button {
+      width: 75%;
     }
   }
 `;
