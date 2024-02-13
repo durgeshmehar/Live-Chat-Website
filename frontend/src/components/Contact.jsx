@@ -7,7 +7,7 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { getContactsRoute } from "../utils/APIRoutes";
 
-export default function Contact({ changeChat, currentUser, msgNotification }) {
+export default function Contact({ changeChat, currentUser, msgNotification, currentChat }) {
   const [contacts, setContacts] = useState(undefined);
   const [selectedUser, setSelectedUser] = useState(undefined);
   const navigate = useNavigate();
@@ -37,6 +37,12 @@ export default function Contact({ changeChat, currentUser, msgNotification }) {
     navigate("/login");
   };
 
+  useEffect(()=>{
+    if(!currentChat){
+      setSelectedUser(undefined)
+    }
+  },[currentChat])
+
   return (
     <>
       <Container>
@@ -65,7 +71,6 @@ export default function Contact({ changeChat, currentUser, msgNotification }) {
                     src={`data:image/svg+xml;base64,${contact.avatarImage}`}
                   />
                   <h3>{contact.username}</h3>
-                  {console.log("msgNotification updation:", msgNotification)}
                   {msgNotification &&
                     msgNotification.map((userObj) => {
                       if (userObj._id == contact._id && userObj.count > 0) {

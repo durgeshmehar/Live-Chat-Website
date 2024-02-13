@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Contact from "../components/Contact";
 import styled from "styled-components";
@@ -8,7 +8,7 @@ import { host } from "../utils/APIRoutes";
 import { io } from "socket.io-client";
 
 function Chat() {
-  const socket = useRef();
+  const [latestSocket , setLatestSocket] = useState(null);
   const navigate = useNavigate();
   const [currentChat, setCurrentChat] = useState(undefined);
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -49,22 +49,6 @@ function Chat() {
   };
 
   useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host);
-      socket.current.on("connect_error", (err) => {
-        console.log(`Connection error frontend: ${err.message}`);
-      });
-      socket.current.emit("add-user", currentUser._id);
-    }
-    //cloase the connection
-    return () => {
-      if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-        socket.current.close();
-      }
-    };
-  }, [currentUser]);
-
-  useEffect(() => {
     const user = JSON.parse(localStorage.getItem("chat-app-user"));
     if (user) {
       setCurrentUser(user);
@@ -74,14 +58,29 @@ function Chat() {
   }, []);
 
   useEffect(() => {
-    if (socket.current) {
-      socket.current.on("receive-message", (msg) => {
-        if (!currentChat || currentChat._id !== msg.from) {
-          handleNotification(msg.from);
-        }
+    if (currentUser) {
+      const socket = io(host);
+      socket.on("connect_error", (err) => {
+        console.log(`Connection error frontend: ${err.message}`);
+      });
+      socket.emit("add-user", currentUser._id);
+      setLatestSocket(socket);
+    }
+    //cloase the connection
+    return () => {
+      if (latestSocket && latestSocket.readyState === WebSocket.OPEN) {
+        latestSocket.close();
+      }
+    };
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (latestSocket) {
+      latestSocket.on("receive-message", (msg) => {
+           handleNotification(msg.from);
       });
     }
-  }, [currentChat, handleNotification, socket]);
+  }, [latestSocket]);
 
   return (
     <>
@@ -95,6 +94,7 @@ function Chat() {
               changeChat={handleChangeChat}
               currentUser={currentUser}
               msgNotification={msgNotification}
+              currentChat={currentChat}
             />
           </div>
 
@@ -108,7 +108,7 @@ function Chat() {
                 currentChat={currentChat}
                 currentUser={currentUser}
                 isBackClick={isBackClick}
-                socket={socket}
+                socket={latestSocket}
                 handleNotification={handleNotification}
                 removeNotification={removeNotification}
               />

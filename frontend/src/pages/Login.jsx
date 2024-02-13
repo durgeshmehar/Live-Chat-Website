@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { loginRoute } from "../utils/APIRoutes";
+import loader from "../assets/loader.gif";
 
 function Login() {
   const [values, setValues] = useState({
@@ -49,11 +50,10 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     setIsLoading(true);
+    e.preventDefault();
     if (handleValidation()) {
       const { username, password } = values;
-      console.log("submited :", values);
       try {
         const { data } = await axios.post(loginRoute, {
           username: username,
@@ -63,10 +63,7 @@ function Login() {
         if (data.status === false) {
           toast.error(data.msg, toastOptions);
         } else {
-          await localStorage.setItem(
-            "chat-app-user",
-            JSON.stringify(data.user)
-          );
+          localStorage.setItem("chat-app-user",JSON.stringify(data.user));
           const user = await JSON.parse(localStorage.getItem("chat-app-user"));
 
           if (user && user.isAvatarImageSet === false) {
@@ -92,33 +89,38 @@ function Login() {
 
   return (
     <>
-      <Container>
-        {/* {console.log("registerRoute :", registerRoute)} */}
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <div className="brand">
-            <img src={Logo} alt="Logo Image" />
-            <h1>Snappy</h1>
-          </div>
+      {isLoading ? (
+        <Container>
+          <img src={loader} className="loader" />
+        </Container>
+      ) : (
+        <Container>
+          <form onSubmit={(e) => handleSubmit(e)}>
+            <div className="brand">
+              <img src={Logo} alt="Logo Image" />
+              <h1>Snappy</h1>
+            </div>
 
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={(e) => handleChange(e)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={(e) => handleChange(e)}
-          />
+            <input
+              type="text"
+              placeholder="Username"
+              name="username"
+              onChange={(e) => handleChange(e)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              name="password"
+              onChange={(e) => handleChange(e)}
+            />
 
-          <button type="submit">Login</button>
-          <span>
-            Create an account? <Link to="/register"> &nbsp; Register</Link>{" "}
-          </span>
-        </form>
-      </Container>
+            <button type="submit">Login</button>
+            <span>
+              Create an account? <Link to="/register"> &nbsp; Register</Link>{" "}
+            </span>
+          </form>
+        </Container>
+      )}
       <ToastContainer />
     </>
   );
@@ -132,7 +134,10 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
+  .loader {
+    height: 20rem;
+    width: 20rem;
+  }
   form {
     background-color: #00000076;
     border-radius: 2rem;

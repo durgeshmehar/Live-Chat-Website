@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { registerRoute } from "../utils/APIRoutes";
+import loader from "../assets/loader.gif";
 
 function Register() {
   const [values, setValues] = useState({
@@ -14,6 +15,7 @@ function Register() {
     password: "",
     confirm_password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const toastOptions = {
     position: "bottom-right",
@@ -26,7 +28,7 @@ function Register() {
   };
   const navigate = useNavigate();
   useEffect(() => {
-    if(localStorage.getItem("chat-app-user")){
+    if (localStorage.getItem("chat-app-user")) {
       navigate("/");
     }
   }, []);
@@ -49,25 +51,29 @@ function Register() {
   };
 
   const handleSubmit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
+
     if (handleValidation()) {
       const { username, email, password } = values;
-      console.log("submited :", values);
-      const {data} = await axios.post(registerRoute, {
-        username: username,
-        email : email,
-        password:password,
-      });
+      try {
+        const { data } = await axios.post(registerRoute, {
+          username: username,
+          email: email,
+          password: password,
+        });
 
-      if(data.status === false){
-        toast.error(data.msg, toastOptions);
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        } else {
+          localStorage.setItem("chat-app-user", JSON.stringify(data.user));
+          navigate("/setavatar");
+        }
+        setIsLoading(false);
+      } catch (err) {
+        toast.error("Failed to create user,Try again", toastOptions);
+        setIsLoading(false);
       }
-      else{
-        console.log("data :", data);
-        localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-        navigate("/setavatar"); 
-      }
-
     }
   };
 
@@ -80,8 +86,12 @@ function Register() {
 
   return (
     <>
+    {isLoading ? (
+        <Container>
+          <img src={loader} className="loader" />
+        </Container>
+      ) : (
       <Container>
-      {/* {console.log("registerRoute :", registerRoute)} */}
         <form onSubmit={(e) => handleSubmit(e)}>
           <div className="brand">
             <img src={Logo} alt="Logo Image" />
@@ -118,7 +128,7 @@ function Register() {
             Already have an account? <Link to="/login"> &nbsp; Login</Link>{" "}
           </span>
         </form>
-      </Container>
+      </Container>)}
       <ToastContainer />
     </>
   );
@@ -132,6 +142,11 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  .loader {
+    height: 20rem;
+    width: 20rem;
+  }
 
   form {
     background-color: #00000076;
@@ -151,7 +166,7 @@ const Container = styled.div`
     img {
       height: 5rem;
     }
-    h1{
+    h1 {
       color: white;
       text-transform: uppercase;
     }
@@ -206,7 +221,7 @@ const Container = styled.div`
       font-weight: bold;
     }
   }
-  
+
   @media (max-width: 600px) {
     form {
       padding: 2rem 4vw;
@@ -215,21 +230,21 @@ const Container = styled.div`
       img {
         height: 2rem !important;
       }
-      h1{
+      h1 {
         font-size: 1.5rem;
       }
     }
-    input,button{
-      width:70vw !important; 
-      padding:0.5rem;
+    input,
+    button {
+      width: 70vw !important;
+      padding: 0.5rem;
       margin-block: 0.8rem;
       font-size: 0.9rem;
     }
-    span{
+    span {
       font-size: 0.8rem;
     }
   }
-
 `;
 
 export default Register;

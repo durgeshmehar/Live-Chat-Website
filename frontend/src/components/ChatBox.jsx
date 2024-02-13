@@ -23,7 +23,7 @@ export default function ChatBox({
       to: currentChat._id,
       message: msg,
     });
-    socket.current.emit("send-message", {
+    socket.emit("send-message", {
       to: currentChat._id,
       from: currentUser._id,
       message: msg,
@@ -61,21 +61,19 @@ export default function ChatBox({
   }, [currentChat]);
 
   useEffect(() => {
-    if (socket.current) {
-      socket.current.on("receive-message", (msg) => {
+    if (socket) {
+      socket.on("receive-message", (msg) => {
         if (msg.from == currentChat._id) {
           setArrivalMessage({
             fromSelf: false,
             message: msg.message,
             time: msg.time,
           });
-        } else {
-          console.log("msg.from :", msg.from);
-          handleNotification(msg.from);
         }
       });
     }
   }, [socket]);
+
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -100,6 +98,7 @@ export default function ChatBox({
 
   return (
     <Container>
+    {console.log("currentChat status:", currentChat)}
       <div className="chat-header">
         <div className="brand">
           <FaArrowLeft
